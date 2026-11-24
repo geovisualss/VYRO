@@ -1,8 +1,7 @@
-# Download the extracted folder I made, or just unzip VYRO.zip yourself
 cd /path/to/VYRO          # the folder that contains project.yml and Sources/
 
 git init                  # only if the repo is empty
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
+git remote add origin https://github.com/geovisualss/VYRO.git
 git add .
 git commit -m "Add VYRO source + IPA build workflow"
 git branch -M main
