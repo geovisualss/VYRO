@@ -1,1 +1,32 @@
 .github/workflows/build.yml
+name: Build IPA
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Create Sources folder and move files
+        run: |
+          mkdir -p Sources
+          mv App.swift Builder.swift Compositor.swift ContentView.swift EditorModel.swift Effects.swift Models.swift RemapGraph.swift Sources/ 2>/dev/null || true
+      - name: Generate project
+        run: xcodegen generate
+      - name: Build (unsigned)
+        run: |
+          xcodebuild -project VYRO.xcodeproj -scheme VYRO \
+            -configuration Release -sdk iphoneos -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+      - name: Package IPA
+        run: |
+          mkdir Payload
+          cp -R build/Build/Products/Release-iphoneos/VYRO.app Payload/
+          zip -r VYRO.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VYRO-ipa
+          path: VYRO.ipa
